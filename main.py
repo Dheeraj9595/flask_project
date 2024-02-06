@@ -1,4 +1,5 @@
-from flask import Flask, jsonify, request, abort, render_template, request, jsonify
+from flask import Flask, jsonify, request, abort, render_template, \
+    request, jsonify, send_from_directory
 from db import SessionLocal, User, Order
 from pydantic import BaseModel
 import bcrypt
@@ -166,6 +167,11 @@ def upload_file():
         return jsonify({"message": "File uploaded successfully"})
 
     return jsonify({"error": "File type not allowed"})
+
+
+@app.route('/download/<filename>', methods=['GET'])
+def download_file(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename, as_attachment=True)
 
 
 if __name__ == "__main__":
