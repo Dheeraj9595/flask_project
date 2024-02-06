@@ -153,7 +153,6 @@ def index():
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
-    breakpoint()
     if 'file' not in request.files:
         return jsonify({"error": "No file part"})
 
