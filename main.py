@@ -149,7 +149,8 @@ def allowed_file(filename):
 
 @app.route('/')
 def index():
-    return render_template('upload_form.html')
+    return render_template('index.html', title='Flask App', welcome_message='Welcome to the....',
+                           content='Home Page.')
 
 
 @app.route('/upload', methods=['POST'])
