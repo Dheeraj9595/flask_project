@@ -1,7 +1,7 @@
 from sqlalchemy.orm import declarative_base, sessionmaker, relationship
 from sqlalchemy import create_engine, Column, Integer, String, ForeignKey
 
-DATABASE_URL = "mysql+mysqlconnector://root:12345@localhost:3306/flask"
+DATABASE_URL = "mysql+mysqlconnector://admin:Root*1234@localhost:3306/flaskdb"
 
 engine = create_engine(DATABASE_URL)
 
@@ -10,6 +10,7 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
 db = SessionLocal()
+
 
 class User(Base):
     __tablename__ = "users"
