@@ -3,7 +3,6 @@ from users import users_bp
 from orders import orders_bp
 from uploads import uploads_bp
 
-
 app = Flask(__name__)
 
 
@@ -11,6 +10,11 @@ app = Flask(__name__)
 def index():
     return render_template('index.html', title='Flask App', welcome_message='Welcome to the....',
                            content='Home Page.')
+
+
+@app.route('/login')
+def login():
+    return render_template('login.html')
 
 
 # Register users_bp and orders_bp with the app
