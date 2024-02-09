@@ -1,7 +1,8 @@
 import bcrypt
 from flask import Blueprint, request, jsonify
 from pydantic import BaseModel
-from db import User, db
+from db import User, db, create
+from sqlalchemy.exc import IntegrityError
 
 users_bp = Blueprint('users', __name__, url_prefix='/api/users')
 
@@ -15,16 +16,23 @@ class CreateUser(BaseModel):
 def register():
     user_data = request.json
     user = CreateUser(**user_data)
+
     hashed_password = bcrypt.hashpw(user.password.encode('utf-8'), bcrypt.gensalt())
     db_user = User(username=user.username, password=hashed_password)
-    db.add(db_user)
-    db.commit()
-    db.refresh(db_user)
-    # Close the database session (if not using Flask's @app.after_request)
-    db.close()
-    # Serialize the user data (optional)
-    serialized_user = {"id": db_user.id, "username": db_user.username}  # Exclude password field
-    return jsonify({"message": "User created successfully", "user": serialized_user})
+
+    try:
+        create(db, db_user)
+        serialized_user = {"id": db_user.id, "username": db_user.username}
+        return jsonify({"message": "User created successfully", "user": serialized_user})
+    except IntegrityError as e:
+        db.rollback()
+        error_info = e.orig.args
+        if "Duplicate entry" in str(error_info):
+            return jsonify({"error": "Username already exists"}), 400
+        else:
+            return jsonify({"error": f"An error occurred while creating the user: {e}"}), 500
+    finally:
+        db.close()
 
 
 def serialize_user(user):
@@ -70,6 +78,3 @@ def update_user(user_id: int):
         return jsonify({"message": f"User with ID {user_id} updated successfully"})
     else:
         return jsonify({"message": f"User with ID {user_id} not found"})
-
-
-

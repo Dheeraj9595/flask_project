@@ -1,7 +1,8 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, jsonify, request
 from users import users_bp
 from orders import orders_bp
 from uploads import uploads_bp
+from todos import todos_bp
 
 app = Flask(__name__)
 
@@ -21,6 +22,7 @@ def login():
 app.register_blueprint(users_bp, url_prefix='/api/users')
 app.register_blueprint(orders_bp, url_prefix='/api/orders')
 app.register_blueprint(uploads_bp, url_prefix='/upload')
+app.register_blueprint(todos_bp, url_prefix='/todos')
 
 if __name__ == "__main__":
     app.run(debug=True)
