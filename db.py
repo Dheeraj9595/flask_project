@@ -21,7 +21,8 @@ class AbstractModel(Base):
 
 class User(AbstractModel):
     __tablename__ = "users"
-    id = Column(Integer, primary_key=True, index=True)
+    first_name = Column(String(50), index=True)
+    last_name = Column(String(50), index=True)
     username = Column(String(50), unique=True, index=True)
     password = Column(String(200))
     # Establish a one-to-many relationship with orders

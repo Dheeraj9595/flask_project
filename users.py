@@ -10,6 +10,8 @@ users_bp = Blueprint('users', __name__, url_prefix='/api/users')
 class CreateUser(BaseModel):
     username: str
     password: str
+    firstname: str
+    lastname: str
 
 
 @users_bp.route('/register/', methods=['POST'])
@@ -18,7 +20,8 @@ def register():
     user = CreateUser(**user_data)
 
     hashed_password = bcrypt.hashpw(user.password.encode('utf-8'), bcrypt.gensalt())
-    db_user = User(username=user.username, password=hashed_password)
+    db_user = User(username=user.username, password=hashed_password,
+                   first_name=user.firstname, last_name=user.lastname)
 
     try:
         create(db, db_user)
@@ -54,6 +57,20 @@ def get_all():
     users = db.query(User).all()
     serialize_users = [serialize_user(user) for user in users]
     return {"users": serialize_users}
+
+
+def get_all_serializer(user):
+    return {"id": user.id,
+            "username": user.username,
+            "first name": user.first_name,
+            "last name": user.last_name}
+
+
+@users_bp.route('/all/d/', methods=['GET'])
+def get_all_detail():
+    users = db.query(User).all()
+    serialize_users = [get_all_serializer(user) for user in users]
+    return serialize_users
 
 
 @users_bp.route('/delete-user/<user_id>/', methods=['DELETE'])
